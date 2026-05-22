@@ -30,7 +30,7 @@ Shuffle SOAR
     ├── Branch: IP enrichment ──── Cortex → AbuseIPDB analyzer
     ├── Branch: Hash enrichment ── Cortex → VirusTotal analyzer
     │
-    ├── Shuffle Tools 2 ──── LLM Triage (foundation-sec via Ollama)
+    ├── Shuffle Tools 2 ──── LLM Triage (foundation-sec-8b-instruct via Ollama)
     │       │                 • Context flags pre-computation
     │       │                 • Rule-based pre-decision
     │       │                 • 4-step reasoning prompt
@@ -58,8 +58,8 @@ Shuffle SOAR
 | SOAR | Shuffle | Workflow automation, playbook orchestration |
 | Case Management | TheHive 5.2 | Alert/case lifecycle, observables, analyst collaboration |
 | Enrichment | Cortex 3.1.7 | AbuseIPDB + VirusTotal analyzers |
-| LLM Runtime | Ollama (local) | Serving `foundation-sec` model via REST API |
-| LLM Model | foundation-sec (Cisco) | Cybersecurity-tuned LLM for triage and reporting |
+| LLM Runtime | Ollama (local) | Serving `foundation-sec-8b-instruct` via REST API |
+| LLM Model | foundation-sec-8b-instruct (Cisco) | Cybersecurity-specialized 8B instruction-tuned LLM, used as-is without fine-tuning |
 | Deployment | Docker Compose | All components containerized |
 | OS | Ubuntu 24 | Host infrastructure |
 | Agents | Wazuh Agent 4.9.0 | Windows 10 / Linux endpoint monitoring |
@@ -67,6 +67,8 @@ Shuffle SOAR
 ---
 
 ## 🤖 LLM Pipeline — Shuffle Tools 2 (Triage)
+
+The model used is **Cisco foundation-sec-8b-instruct**, a cybersecurity-specialized 8B parameter instruction-tuned LLM, deployed locally via Ollama and used **without any fine-tuning**. All intelligence comes from prompt engineering — structured reasoning steps, pre-computed context flags, and explicit decision rules injected at inference time.
 
 The triage node performs **4 mandatory reasoning steps** before producing a verdict:
 
@@ -88,7 +90,25 @@ Pre-computed Python flags injected into the prompt:
 
 ---
 
-## 📊 Test Results
+## 🧠 Why foundation-sec-8b-instruct?
+
+[foundation-sec-8b-instruct](https://huggingface.co/cisco/foundation-sec-8b-instruct) is an open-weight model released by Cisco specifically trained on cybersecurity data. Compared to general-purpose models of similar size, it demonstrates stronger performance on:
+
+- Security alert classification
+- MITRE ATT&CK technique identification
+- Structured output generation (JSON, fixed-format responses)
+- Cybersecurity terminology and context understanding
+
+**Key choice criteria for this project:**
+- Runs fully locally on CPU/GPU via Ollama — no API costs, no data leakage
+- 8B parameters fits within 16GB RAM
+- Instruction-tuned — responds well to structured prompts with explicit output formats
+- No fine-tuning required — prompt engineering alone is sufficient for the triage task
+
+The model is used **as-is from Cisco's public release**. No fine-tuning was performed. All behavioral customization is achieved through prompt engineering in Shuffle Tools 2 and 3.
+
+---
+
 
 ### True Positive Detection (11 attack scenarios)
 
@@ -164,7 +184,7 @@ cd llm-soc
 docker-compose up -d
 
 # Pull the LLM model
-ollama pull foundation-sec
+ollama pull foundation-sec-8b-instruct
 
 # Access the interfaces
 # Wazuh Dashboard:  https://localhost:8443
