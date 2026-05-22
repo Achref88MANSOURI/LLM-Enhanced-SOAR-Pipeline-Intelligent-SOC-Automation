@@ -199,9 +199,9 @@ soc-llm-soar/
 
 ## 👤 Author
 
-**Your Name**  
-Cybersecurity Engineering Student  
-[LinkedIn](https://linkedin.com/in/yourprofile) · [GitHub](https://github.com/yourprofile)
+**Achref Mansouri**  
+ICT Engineering Student · Cybersecurity & AI-Driven Security 
+[LinkedIn]([https://linkedin.com/in/yourprofile](https://www.linkedin.com/in/achref-mansouri-84a012244/)) 
 
 ---
 
